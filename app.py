@@ -643,17 +643,43 @@ def get_feature_importance(pipeline):
         feature_names = list(numeric_features) + list(country_features)
         importances = model.feature_importances_
 
-        importance_df = pd.DataFrame({
+        raw_importance_df = pd.DataFrame({
             "Feature": feature_names,
             "Importance": importances
         })
 
-        importance_df["Feature"] = importance_df["Feature"].apply(feature_label)
+        subscribers_importance = raw_importance_df.loc[
+            raw_importance_df["Feature"] == "subscribers",
+            "Importance"
+        ].sum()
+
+        total_videos_importance = raw_importance_df.loc[
+            raw_importance_df["Feature"] == "total_videos",
+            "Importance"
+        ].sum()
+
+        country_importance = raw_importance_df.loc[
+            raw_importance_df["Feature"].str.startswith("country_"),
+            "Importance"
+        ].sum()
+
+        importance_df = pd.DataFrame({
+            "Feature": [
+                "Subscribers",
+                "Total Videos",
+                "Country"
+            ],
+            "Importance": [
+                subscribers_importance,
+                total_videos_importance,
+                country_importance
+            ]
+        })
 
         importance_df = importance_df.sort_values(
             "Importance",
             ascending=False
-        ).head(12)
+        )
 
         return importance_df
 
@@ -667,7 +693,7 @@ def get_feature_importance(pipeline):
 
 with st.sidebar:
     st.markdown("## 📁 Dataset")
-    st.caption("Dashboard akan otomatis membaca file `youtube_4k_channels_cleaned.csv` jika ada di Colab.")
+    st.caption("Dashboard akan otomatis membaca file `youtube_4k_channels_cleaned.csv` jika ada")
 
     uploaded = st.file_uploader(
         "Upload CSV",
