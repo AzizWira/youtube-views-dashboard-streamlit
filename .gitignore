@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.log
+streamlit.log
+cloudflared.log
+sample_data/
+.ipynb_checkpoints/
